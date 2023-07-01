@@ -1,0 +1,18 @@
+{
+	"name": "spotify_artists",
+	"dockerComposeFile": [
+		"../docker-compose.yml",
+		"docker-compose.dev.yml"
+	],
+	"service": "api",
+	"workspaceFolder": "/backend",
+	"remoteUser": "backend_user",
+	"shutdownAction": "stopCompose",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.python"
+			]
+		}
+	}
+}

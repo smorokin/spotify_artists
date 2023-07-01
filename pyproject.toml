@@ -1,0 +1,20 @@
+
+[project]
+name = "spotify_artists"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Sergej Morokin", email = "sergej.morokin@gmail.com"},
+]
+dependencies = [
+    "fastapi[all]>=0.98.0",
+    "celery>=5.3.1",
+]
+requires-python = ">=3.11"
+license = {text = "MIT"}
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "black>=23.3.0",
+    "ruff>=0.0.275",
+]

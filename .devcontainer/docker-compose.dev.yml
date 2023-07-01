@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      target: development
+    # Overrides default command so things don't shut down after the process ends.
+    command: /bin/sh -c "while sleep 1000; do :; done"
+    volumes:
+      # Mounts the project folder to '/backend'.
+      - .:/backend:cached
+  
