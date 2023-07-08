@@ -13,7 +13,7 @@ class AuthToken(BaseModel):
     expires_in: int  # seconds
     scope: str
     token_type: str
-    created: datetime = Field(default_factory=datetime.now)
+    created: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     class Config:
         orm_mode = True
