@@ -17,7 +17,10 @@ TEST_DATABASE_URL = "sqlite+aiosqlite://"
 
 @pytest_asyncio.fixture
 async def session_maker_fixture():
-    """This fixture provides an independent db engine per test. It also creates the tables before the test and deletes them afterwards. This only works with asyncio."""
+    """This fixture provides an independent db engine per test.
+    It also creates the tables before the test and deletes them afterwards.
+    This only works with pytest_asyncio, pytest_asyncio.fixture
+    and pytest.mark.asyncio"""
     test_engine = create_async_engine(TEST_DATABASE_URL)
     test_session_maker = async_sessionmaker(test_engine, expire_on_commit=False)
 
