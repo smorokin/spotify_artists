@@ -8,10 +8,12 @@ authors = [
 ]
 dependencies = [
     "fastapi[all]>=0.98.0",
-    "sqlalchemy[asyncio]>=2.0.17",
-    "psycopg2-binary>=2.9.6",
-    "asyncpg>=0.27.0",
+    "sqlalchemy[aiosqlite,asyncio,asyncpg,psycopg2-binary]>=2.0.18",
     "celery[redis]>=5.3.1",
+    "pytest>=7.4.0",
+    "httpx>=0.24.1",
+    "pytest-asyncio>=0.21.0",
+    "asyncpg>=0.28.0",
 ]
 requires-python = ">=3.11"
 license = {text = "MIT"}

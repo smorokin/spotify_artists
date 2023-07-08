@@ -17,6 +17,15 @@
             ],
             "jinja": true,
             "justMyCode": true
+        },
+        {
+            "name": "Python: PyTest",
+            "type": "python",
+            "request": "launch",
+            "module": "pytest",
+            "args": [],
+            "jinja": true,
+            "justMyCode": true
         }
     ]
 }
