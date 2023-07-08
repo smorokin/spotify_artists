@@ -9,4 +9,3 @@ services:
     volumes:
       # Mounts the project folder to '/backend'.
       - .:/backend:cached
-  

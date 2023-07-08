@@ -14,7 +14,7 @@ from sqlalchemy.orm import DeclarativeBase
 from config import get_settings
 
 
-DATABASE_URL = f"postgresql+asyncpg://{get_settings().postgres_user}:{get_settings().postgres_password}@postgres/{get_settings().postgres_db}"
+DATABASE_URL = f"postgresql+asyncpg://{get_settings().postgres_user}:{get_settings().postgres_password}@{get_settings().postgres_host}/{get_settings().postgres_db}"
 
 
 class Base(AsyncAttrs, DeclarativeBase):
@@ -32,13 +32,9 @@ engine = create_async_engine(DATABASE_URL)
 session_maker = async_sessionmaker(engine, expire_on_commit=False)
 
 
-# TODO: replace with alembic
 async def create_db_and_tables():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-        # await conn.execute(
-        #    Artist.insert(), [{"name": "some name 1"}, {"name": "some name 2"}]
-        # )
 
 
 async def get_session() -> AsyncGenerator[AsyncSession, None]:

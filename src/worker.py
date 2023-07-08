@@ -1,14 +1,10 @@
 from logging import getLogger
 
 from celery import Celery
-from httpx import AsyncClient
-from pydantic import ValidationError, parse_obj_as
 
 from config import get_settings
-import crud
 import main
 from db import get_session
-from schemas import AuthToken, Artist
 
 _logger = getLogger(__file__)
 
