@@ -63,16 +63,26 @@ class Genre(BaseModel):
     def set_name(self, val: str) -> None:
         self.__root__ = val
 
-    def dict(self, *,
-            include: Union["AbstractSetIntStr", "MappingIntStrAny"] | None = None,
-            exclude: Union["AbstractSetIntStr", "MappingIntStrAny"] | None = None,
-            by_alias: bool = False,
-            skip_defaults: bool | None = None,
-            exclude_unset: bool = False,
-            exclude_defaults: bool = False,
-            exclude_none: bool = False
-        ) -> dict[str, Any]:
-        d = super().dict(include=include, exclude=exclude, by_alias=by_alias, skip_defaults=skip_defaults, exclude_unset=exclude_unset, exclude_defaults=exclude_defaults, exclude_none=exclude_none)
+    def dict(
+        self,
+        *,
+        include: Union["AbstractSetIntStr", "MappingIntStrAny"] | None = None,
+        exclude: Union["AbstractSetIntStr", "MappingIntStrAny"] | None = None,
+        by_alias: bool = False,
+        skip_defaults: bool | None = None,
+        exclude_unset: bool = False,
+        exclude_defaults: bool = False,
+        exclude_none: bool = False,
+    ) -> dict[str, Any]:
+        d = super().dict(
+            include=include,
+            exclude=exclude,
+            by_alias=by_alias,
+            skip_defaults=skip_defaults,
+            exclude_unset=exclude_unset,
+            exclude_defaults=exclude_defaults,
+            exclude_none=exclude_none,
+        )
         d["name"] = self.__root__
         return d
 
@@ -81,6 +91,7 @@ class _UserGetter(GetterDict):
     def get(self, key: str, default: Any) -> Any:
         if key in {"genres"}:
             return [genre.name for genre in self._obj.genres]
+
         return super().get(key, default)
 
 
