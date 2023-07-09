@@ -37,7 +37,7 @@ async def login(
     """Login to Spotify (sadly does not work from Swagger)"""
     state = "".join(
         secrets.choice(string.ascii_uppercase + string.ascii_lowercase)
-        for i in range(16)
+        for _ in range(16)
     )
     reply_url = await spotify_client.login(
         settings.spotify_client_id, settings.base_url, state
@@ -177,7 +177,7 @@ async def create_artist(
     db_session: DbSessionDependency,
     crud: ArtistCrudDependency,
     artist: schemas.Artist,
-) ->  schemas.Artist:
+) -> schemas.Artist:
     """Create a new artist in the database"""
     return await crud.create_artist(db_session, artist)
 
@@ -187,6 +187,6 @@ async def delete_artist(
     db_session: DbSessionDependency,
     crud: ArtistCrudDependency,
     artist_id: str,
-) ->  None:
+) -> None:
     """Delete one artist by id"""
     return await crud.delete_artist(db_session, artist_id)

@@ -77,7 +77,7 @@ class ArtistCrud:
             artists_in_db = (
                 (await db_session.execute(artists_in_db_query)).scalars().all()
             )
-            artists_in_db_dict = {a.id: a for a in artists_in_db if a.id is not None}
+            artists_in_db_dict = {a.id: a for a in artists_in_db}
 
             for updated_artist in updated_artists:
                 artist_in_db = artists_in_db_dict.get(updated_artist.id)
@@ -163,16 +163,11 @@ class ArtistCrud:
         return schemas.Artist.from_orm(artist_db)
 
     @staticmethod
-    async def delete_artist(
-        db_session: DbSessionDependency, artist_id: str
-    ) -> None:
-        async with db_session.begin() as transaction:
-            query = delete(models.Artist).where(
-                    models.Artist.id == artist_id
-                )
+    async def delete_artist(db_session: DbSessionDependency, artist_id: str) -> None:
+        async with db_session.begin():
+            query = delete(models.Artist).where(models.Artist.id == artist_id)
 
-            res = await db_session.execute(query)
-
+            await db_session.execute(query)
 
     @staticmethod
     async def _create_genres_if_missing(

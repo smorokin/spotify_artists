@@ -1,9 +1,10 @@
+from typing import AsyncGenerator
 from pydantic import HttpUrl, parse_obj_as
 import pytest
 import pytest_asyncio
 from sqlalchemy import select
 
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 
 from db import Base
 from crud import ArtistCrud, AuthTokenCrud
@@ -15,8 +16,10 @@ import models
 TEST_DATABASE_URL = "sqlite+aiosqlite://"
 
 
-@pytest_asyncio.fixture
-async def session_maker_fixture():
+@pytest_asyncio.fixture     # type: ignore
+async def session_maker_fixture() -> AsyncGenerator[
+    async_sessionmaker[AsyncSession], None
+]:
     """This fixture provides an independent db engine per test.
     It also creates the tables before the test and deletes them afterwards.
     This only works with pytest_asyncio, pytest_asyncio.fixture
@@ -34,7 +37,9 @@ async def session_maker_fixture():
 
 
 @pytest.mark.asyncio
-async def test_replace_auth_token_when_none_exist(session_maker_fixture):
+async def test_replace_auth_token_when_none_exist(
+    session_maker_fixture: async_sessionmaker[AsyncSession],
+):
     first_token = schemas.AuthToken(
         access_token="access_token_test",
         refresh_token="refresh_token_test",
@@ -53,7 +58,9 @@ async def test_replace_auth_token_when_none_exist(session_maker_fixture):
 
 
 @pytest.mark.asyncio
-async def test_replace_auth_token_when_one_exists(session_maker_fixture):
+async def test_replace_auth_token_when_one_exists(
+    session_maker_fixture: async_sessionmaker[AsyncSession],
+):
     first_token = schemas.AuthToken(
         access_token="access_token_test",
         refresh_token="refresh_token_test",
@@ -82,7 +89,7 @@ async def test_replace_auth_token_when_one_exists(session_maker_fixture):
 
 
 @pytest.mark.asyncio
-async def test_update_artist(session_maker_fixture):
+async def test_update_artist(session_maker_fixture: async_sessionmaker[AsyncSession]):
     _url = parse_obj_as(HttpUrl, "http://example.com/a")
     artist = schemas.Artist(
         id="a",
@@ -104,7 +111,9 @@ async def test_update_artist(session_maker_fixture):
 
 
 @pytest.mark.asyncio
-async def test_update_artist_skip_manually_modfied(session_maker_fixture):
+async def test_update_artist_skip_manually_modfied(
+    session_maker_fixture: async_sessionmaker[AsyncSession],
+):
     _url = parse_obj_as(HttpUrl, "http://example.com/a")
     artist = schemas.Artist(
         id="a",
@@ -130,7 +139,7 @@ async def test_update_artist_skip_manually_modfied(session_maker_fixture):
 
 
 @pytest.mark.asyncio
-async def test_read_artist(session_maker_fixture):
+async def test_read_artist(session_maker_fixture: async_sessionmaker[AsyncSession]):
     _url = parse_obj_as(HttpUrl, "http://example.com/a")
     artist = schemas.Artist(
         id="a",
@@ -153,8 +162,9 @@ async def test_read_artist(session_maker_fixture):
 
     assert artist_in_db == artist
 
+
 @pytest.mark.asyncio
-async def test_create_artist(session_maker_fixture):
+async def test_create_artist(session_maker_fixture: async_sessionmaker[AsyncSession]):
     _url = parse_obj_as(HttpUrl, "http://example.com/a")
     artist = schemas.Artist(
         id="c",
@@ -177,8 +187,9 @@ async def test_create_artist(session_maker_fixture):
 
     assert artist_in_db == artist
 
+
 @pytest.mark.asyncio
-async def test_delete_artist(session_maker_fixture):
+async def test_delete_artist(session_maker_fixture: async_sessionmaker[AsyncSession]):
     _url = parse_obj_as(HttpUrl, "http://example.com/a")
     artist = schemas.Artist(
         id="asdf",
@@ -194,22 +205,12 @@ async def test_delete_artist(session_maker_fixture):
     )
 
     async with session_maker_fixture() as session:
-        all_artists = (await session.execute(select(models.Artist))).scalars().all()
-
-    async with session_maker_fixture() as session:
         await ArtistCrud.create_artist(session, artist)
-
-    async with session_maker_fixture() as session:
-        all_artists = (await session.execute(select(models.Artist))).scalars().all()
 
     async with session_maker_fixture() as session:
         await ArtistCrud.delete_artist(session, artist.id)
 
-
     async with session_maker_fixture() as session:
         artist_in_db = await ArtistCrud.read_artist(session, artist_id=artist.id)
-
-    async with session_maker_fixture() as session:
-        all_artists = (await session.execute(select(models.Artist))).scalars().all()
 
     assert artist_in_db is None
