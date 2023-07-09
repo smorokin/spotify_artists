@@ -16,7 +16,7 @@ import models
 TEST_DATABASE_URL = "sqlite+aiosqlite://"
 
 
-@pytest_asyncio.fixture     # type: ignore
+@pytest_asyncio.fixture  # type: ignore
 async def session_maker_fixture() -> AsyncGenerator[
     async_sessionmaker[AsyncSession], None
 ]:

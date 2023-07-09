@@ -20,8 +20,8 @@ _STR_SIZE_SHORT = 64
 association_table = Table(
     "artist_genre_association_table",
     Base.metadata,
-    Column("left_id", ForeignKey("artist.id"), primary_key=True),   # type: ignore
-    Column("right_id", ForeignKey("genre.id"), primary_key=True),   # type: ignore
+    Column("left_id", ForeignKey("artist.id"), primary_key=True),  # type: ignore
+    Column("right_id", ForeignKey("genre.id"), primary_key=True),  # type: ignore
 )
 
 
