@@ -152,3 +152,64 @@ async def test_read_artist(session_maker_fixture):
         artist_in_db = await ArtistCrud.read_artist(session, artist_id=artist.id)
 
     assert artist_in_db == artist
+
+@pytest.mark.asyncio
+async def test_create_artist(session_maker_fixture):
+    _url = parse_obj_as(HttpUrl, "http://example.com/a")
+    artist = schemas.Artist(
+        id="c",
+        type="artist",
+        href=_url,
+        name="test artist c",
+        popularity=1151234,
+        uri="",
+        genres=[schemas.Genre(__root__="new test genre")],
+        external_urls=schemas.ExternalUrls(spotify=_url),
+        followers=schemas.Followers(href=None, total=1),
+        images=[schemas.Image(url=_url, height=10, width=20)],
+    )
+
+    async with session_maker_fixture() as session:
+        await ArtistCrud.create_artist(session, artist)
+
+    async with session_maker_fixture() as session:
+        artist_in_db = await ArtistCrud.read_artist(session, artist_id=artist.id)
+
+    assert artist_in_db == artist
+
+@pytest.mark.asyncio
+async def test_delete_artist(session_maker_fixture):
+    _url = parse_obj_as(HttpUrl, "http://example.com/a")
+    artist = schemas.Artist(
+        id="asdf",
+        type="artist",
+        href=_url,
+        name="test artist a",
+        popularity=1151234,
+        uri="",
+        genres=[schemas.Genre(__root__="new test genre")],
+        external_urls=schemas.ExternalUrls(spotify=_url),
+        followers=schemas.Followers(href=None, total=1),
+        images=[schemas.Image(url=_url, height=10, width=20)],
+    )
+
+    async with session_maker_fixture() as session:
+        all_artists = (await session.execute(select(models.Artist))).scalars().all()
+
+    async with session_maker_fixture() as session:
+        await ArtistCrud.create_artist(session, artist)
+
+    async with session_maker_fixture() as session:
+        all_artists = (await session.execute(select(models.Artist))).scalars().all()
+
+    async with session_maker_fixture() as session:
+        await ArtistCrud.delete_artist(session, artist.id)
+
+
+    async with session_maker_fixture() as session:
+        artist_in_db = await ArtistCrud.read_artist(session, artist_id=artist.id)
+
+    async with session_maker_fixture() as session:
+        all_artists = (await session.execute(select(models.Artist))).scalars().all()
+
+    assert artist_in_db is None

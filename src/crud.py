@@ -136,6 +136,45 @@ class ArtistCrud:
         return schemas.Artist.from_orm(artist_db)
 
     @staticmethod
+    async def create_artist(
+        db_session: DbSessionDependency, artist: schemas.Artist
+    ) -> schemas.Artist:
+        async with db_session.begin() as transaction:
+            genres = await ArtistCrud._create_genres_if_missing(
+                transaction,
+                [genres.name for genres in artist.genres],
+            )
+
+            artist_dict = artist.dict()
+            artist_dict["genres"] = genres
+            artist_dict["external_urls"] = models.ExternalUrls(
+                **artist.external_urls.dict(), id=artist.id
+            )
+            artist_dict["followers"] = models.Followers(
+                **artist.followers.dict(), id=artist.id
+            )
+            artist_dict["images"] = [
+                models.Image(**image.dict()) for image in artist.images
+            ]
+            artist_db = models.Artist(**artist_dict)
+            artist_db.modified_manually = True
+            db_session.add(artist_db)
+
+        return schemas.Artist.from_orm(artist_db)
+
+    @staticmethod
+    async def delete_artist(
+        db_session: DbSessionDependency, artist_id: str
+    ) -> None:
+        async with db_session.begin() as transaction:
+            query = delete(models.Artist).where(
+                    models.Artist.id == artist_id
+                )
+
+            res = await db_session.execute(query)
+
+
+    @staticmethod
     async def _create_genres_if_missing(
         transaction: AsyncSessionTransaction, genre_names: Sequence[str]
     ) -> Sequence[models.Genre]:

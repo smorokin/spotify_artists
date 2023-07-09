@@ -34,7 +34,7 @@ async def root():
 async def login(
     settings: SettingsDependency, spotify_client: SpotifyClientDependency
 ) -> RedirectResponse:
-    """Login to Spotify"""
+    """Login to Spotify (sadly does not work from Swagger)"""
     state = "".join(
         secrets.choice(string.ascii_uppercase + string.ascii_lowercase)
         for i in range(16)
@@ -170,3 +170,23 @@ async def update_artist(
     """Update one artist by id"""
     artist.id = artist_id  # do not allow changing the id
     return await crud.update_artist(db_session, artist, False, True)
+
+
+@app.put("/artist/")
+async def create_artist(
+    db_session: DbSessionDependency,
+    crud: ArtistCrudDependency,
+    artist: schemas.Artist,
+) ->  schemas.Artist:
+    """Create a new artist in the database"""
+    return await crud.create_artist(db_session, artist)
+
+
+@app.delete("/artist/{artist_id}")
+async def delete_artist(
+    db_session: DbSessionDependency,
+    crud: ArtistCrudDependency,
+    artist_id: str,
+) ->  None:
+    """Delete one artist by id"""
+    return await crud.delete_artist(db_session, artist_id)
